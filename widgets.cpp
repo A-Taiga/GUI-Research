@@ -49,7 +49,7 @@ void AGUI::Button::draw (void)
         box.get_center().y - (label_h * .5f)
     };
 
-    AGUI::print (p, "{}", label);
+    AGUI::text (p, "{}", label);
 
     // io.backend->draw_rect({
     //     p.x, 

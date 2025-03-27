@@ -160,7 +160,7 @@ namespace AGUI
     inline void set_color (color_t c) {get_io().font_color = c;}
     
     template <class... Args>
-    void print(const Vec2& pos, std::format_string<Args...> fmt, Args&&... args)
+    void text(const Vec2& pos, std::format_string<Args...> fmt, Args&&... args)
     {
         IO& io = get_io();
         std::string result = std::format(fmt, std::forward<Args>(args)...);

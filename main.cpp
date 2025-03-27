@@ -130,7 +130,7 @@ int main()
         }
 
         AGUI::set_color(AGUI::yellow);
-        AGUI::print ({0,0}, "FPS: {}", frames);
+        AGUI::text ({0,0}, "FPS: {}", frames);
 
 
         AGUI::update();

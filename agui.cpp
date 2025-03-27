@@ -126,7 +126,7 @@ void AGUI::Frame::draw (void)
     io.backend->draw_rect(border, style.bd_color.value());
     border.translate({-position.x, -position.y});
     
-    print ({position.x + style.padding.value(), position.y + style.padding.value()}, "{}", name);
+    text ({position.x + style.padding.value(), position.y + style.padding.value()}, "{}", name);
 
     minimize_button->translate({position.x, position.y + style.padding.value()});
     minimize_button->draw();
