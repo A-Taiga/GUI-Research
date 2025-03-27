@@ -1,3 +1,5 @@
+#include "agui.h"
+#include "sdl2_renderer_backend.h"
 #include <SDL2/SDL.h>
 #include <SDL_render.h>
 #include <SDL2/SDL_ttf.h>
@@ -81,6 +83,23 @@ int main()
         SDL_Log("Error creating SDL_Renderer!");
         return -1;
     }
+    
+
+    AGUI::SDL2::impl_backend (window, renderer);
+
+    AGUI::create_frame ("Test Frame 1", 100, 100, 600, 400);
+    AGUI::create_frame ("Test Frame 2", 800, 100, 600, 400);
+
+    AGUI::create_button ("Test Frame 1", "Button", 0, 0);
+    AGUI::create_button ("Test Frame 1", "X", 0, 100);
+
+    std::string s{};
+
+    for (int i = 33; i < 127; ++i)
+        s += i;
+    AGUI::create_label("Test Frame 2", s, 0, 0);
+
+
 
 
     bool running = true;
@@ -96,6 +115,8 @@ int main()
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
+            AGUI::SDL2::impl_event (&event);
+
             if (event.type == SDL_QUIT)
                 running = false;
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
@@ -108,6 +129,11 @@ int main()
             continue;
         }
 
+        AGUI::set_color(AGUI::yellow);
+        AGUI::print ({0,0}, "FPS: {}", frames);
+
+
+        AGUI::update();
         SDL_RenderPresent(renderer);
         timer.sleep();
     }
