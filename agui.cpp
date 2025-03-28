@@ -1,4 +1,5 @@
 #include "agui.h"
+#include <iterator>
 #include <limits>
 #include <memory>
 #include "widgets.h"
@@ -43,6 +44,8 @@ void AGUI::create_button (std::string frame_id, std::string label, float x, floa
 {
     AGUI_ASSERT (ctx.frames_map.contains(frame_id) && "Frame does not exist");
 
+    AGUI_ASSERT (!(*ctx.frames_map[frame_id])->has_widget_id(label + "##Button") && "Button already has that label");
+
     (*ctx.frames_map[frame_id])->add_widget(std::make_shared<Button> (label, x, y));
 }
 
@@ -52,7 +55,6 @@ void AGUI::create_label  (std::string frame_id, std::string text, float x, float
 
     (*ctx.frames_map[frame_id])->add_widget(std::make_shared<Label> (text, x, y));
 }
-
 
 void AGUI::update (void) 
 {
@@ -80,6 +82,7 @@ void AGUI::update (void)
     });
 }
 
+
 AGUI::Frame::Frame (std::string _name, float x, float y, float w, float h, const Style& _style)
 : name {_name}
 , position {x,y}
@@ -93,7 +96,8 @@ AGUI::Frame::Frame (std::string _name, float x, float y, float w, float h, const
     content    = Rect (0, 40, w + style.padding.value(), h - 40);
     border     = Rect (-bd_width, -bd_width, w + bd_width + style.padding.value(), h + bd_width);
     resize_box = Rect (w - 15 + padding, h - 15, 15, 15);
-    
+
+
     int tx = 0;
     int ty = 0;
     ctx.io.backend->calc_text_size("-", &tx, &ty);
@@ -107,6 +111,7 @@ AGUI::Frame::Frame (std::string _name, float x, float y, float w, float h, const
 void AGUI::Frame::draw (void)
 {
     IO& io = ctx.io;
+    float padding = style.padding.value();
 
     resize();
 
@@ -126,29 +131,34 @@ void AGUI::Frame::draw (void)
     io.backend->draw_rect(border, style.bd_color.value());
     border.translate({-position.x, -position.y});
     
-    text ({position.x + style.padding.value(), position.y + style.padding.value()}, "{}", name);
+    text ({position.x + padding, position.y + padding}, "{}", name);
 
-    minimize_button->translate({position.x, position.y + style.padding.value()});
+    minimize_button->translate({position.x, position.y + padding});
     minimize_button->draw();
-    minimize_button->translate({-position.x, -position.y - style.padding.value()});
+    minimize_button->translate({-position.x, -position.y - padding});
 
-    close_button->translate({position.x, position.y + style.padding.value()});
+    close_button->translate({position.x, position.y + padding});
     close_button->draw();
-    close_button->translate({-position.x, -position.y - style.padding.value()});
+    close_button->translate({-position.x, -position.y - padding});
 
     content.translate({position.x, position.y});
     io.backend->begin_clip (content);
     content.translate({-position.x, -position.y});
 
+
+    content.translate({position.x, position.y});
     for (auto& widget : widgets)
     {
-        const float padding = widget->style().padding.value();
-        widget->translate({position.x + padding, position.y + frame_bar.get_height() + padding});
-        widget->draw();
-        widget->translate({-position.x - padding, -position.y - frame_bar.get_height() - padding});
+        const float fh = frame_bar.get_height();
+        widget->translate({position.x + padding, position.y + fh + padding});
+        if (widget->position().y + widget->size().y < content.get_max().y + 50)
+            widget->draw();
+        widget->translate({-position.x - padding, -position.y - fh - padding});
     }
+    content.translate({-position.x, -position.y});
 
     io.backend->end_clip();
+
 }
 
 bool AGUI::Frame::move (void)
@@ -256,5 +266,10 @@ std::string AGUI::Frame::ID (void) const
 void AGUI::Frame::add_widget (const std::shared_ptr <Widget> widget)
 {
     widgets.push_back (widget);
-    
+    widget_map[widget->ID() + "##Button"] = std::prev(widgets.end());
+}
+
+bool AGUI::Frame::has_widget_id (const std::string& id) const
+{
+    return widget_map.contains (id);
 }

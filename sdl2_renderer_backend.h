@@ -20,7 +20,6 @@ namespace AGUI::SDL2
         int h;
     };
 
-
     class Backend: public AGUI::Backend
     {
         public:

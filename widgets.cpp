@@ -85,6 +85,11 @@ AGUI::Point AGUI::Button::position (void) const
     return box.get_min();
 }
 
+AGUI::Vec2 AGUI::Button::size(void) const
+{
+    return border.get_size();
+}
+
 const AGUI::Style& AGUI::Button::style (void) const
 {
     return style_sheet;
@@ -174,6 +179,12 @@ AGUI::Point AGUI::Label::position  (void) const
 {
     return box.get_min();
 }
+
+AGUI::Vec2 AGUI::Label::size(void) const
+{
+    return border.get_size();
+}
+
 
 const AGUI::Style&  AGUI::Label::style (void) const
 {

@@ -67,15 +67,18 @@ namespace AGUI
         merge (dst.padding, src.padding);
     }
 
+
     class Frame
     {
         public:
             Frame (std::string name, float x, float y, float w, float h, const Style& = {});
-            void        draw        (void);
-            bool        move        (void);
-            void        resize      (void);
-            std::string ID          (void) const;
-            void        add_widget  (const std::shared_ptr <Widget>);
+            void        draw          (void);
+            bool        move          (void);
+            void        resize        (void);
+            std::string ID            (void) const;
+            void        add_widget    (const std::shared_ptr <Widget>);
+            bool        has_widget_id (const std::string&) const;
+            
 
         private:
             std::string name;
@@ -86,24 +89,19 @@ namespace AGUI
             Rect        border;
             Rect        resize_box;
             Style       style;
-
-            bool minimized           = false;
-            bool resizing            = false;
-            bool  frame_bar_selected = false;
-            bool  mouse_was_down     = false;
-            Point mouse_down_pos;
-            Vec2  move_offset;
-            Vec2 resize_offset;
-         
+            bool        minimized           = false;
+            bool        resizing            = false;
+            bool        frame_bar_selected  = false;
+            bool        mouse_was_down      = false;
+            Point       mouse_down_pos;
+            Vec2        move_offset;
+            Vec2        resize_offset;
 
             std::unique_ptr <Button> close_button;
             std::unique_ptr <Button> minimize_button;
 
             std::list <std::shared_ptr <Widget>> widgets;
-
-
-
-            
+            std::unordered_map <std::string, std::list <std::shared_ptr <Widget>>::iterator> widget_map; 
     };
 
     struct Backend
@@ -156,7 +154,9 @@ namespace AGUI
     void create_button (std::string frame_id, std::string label, float x, float y);
     void create_label  (std::string frame_id, std::string text, float x, float y);
 
-    void add_button_cb ();
+    // void add_button_cb (std::string_view frame_id, std::string_view button_id, );
+
+
     inline void set_color (color_t c) {get_io().font_color = c;}
     
     template <class... Args>

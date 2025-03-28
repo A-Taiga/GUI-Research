@@ -17,6 +17,8 @@ namespace AGUI
         virtual void          translate (const Vec2&)  = 0;
         virtual std::string   ID        (void) const   = 0;
         virtual Point         position  (void) const   = 0;
+        virtual Vec2          size      (void) const   = 0;
+
         virtual const Style&  style     (void) const   = 0;
         virtual void          move      (const Point&) = 0;
     };
@@ -31,6 +33,7 @@ namespace AGUI
             virtual void        translate    (const Vec2&) override;
             virtual std::string ID           (void) const final override;
             virtual Point       position     (void) const override;
+            virtual Vec2        size         (void) const override;
             const   Style&      style        (void) const final override;
             virtual void        move         (const Point&) override;
             virtual void        hover        (void);
@@ -62,6 +65,7 @@ namespace AGUI
             virtual void          translate (const Vec2&) override;
             std::string           ID        (void) const final;
             virtual Point         position  (void) const override;
+            virtual Vec2          size      (void) const override;
             const Style&          style     (void) const final;
             virtual void          move      (const Point&) override;
             

@@ -47,9 +47,7 @@ namespace AGUI
             void  set_size_h  (float);
             void  set_pos     (const Point&);
             Vec4  to_Vec4     (void) const;
-
-
-
+            
         private:
             Point min;
             Point max;
