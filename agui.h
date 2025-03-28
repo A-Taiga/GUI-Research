@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <list>
 #include <memory>
-#include <type_traits>
 #include <unordered_map>
 #include "shapes.h"
 #include <cassert>
@@ -35,6 +34,7 @@ namespace AGUI
     static constexpr color_t button_hover      = 0x737373FF;
     static constexpr color_t button_click      = 0x5E5E5EFF;
     static constexpr color_t frame_bar         = 0x333333FF;
+    static constexpr color_t frame_bg          = 0x2E236CFF;
 
     struct Style
     {
@@ -78,9 +78,12 @@ namespace AGUI
             std::string ID            (void) const;
             void        add_widget    (const std::shared_ptr <Widget>);
             bool        has_widget_id (const std::string&) const;
-            
+
 
         private:
+
+            void draw_content (void);
+
             std::string name;
             Point       position;
             Vec2        size;
@@ -151,7 +154,7 @@ namespace AGUI
     void update (void);
 
     void create_frame  (std::string name, float x, float y, float w, float h, const Style& = {});
-    void create_button (std::string frame_id, std::string label, float x, float y);
+    Button* create_button (std::string frame_id, std::string label, float x, float y);
     void create_label  (std::string frame_id, std::string text, float x, float y);
 
     // void add_button_cb (std::string_view frame_id, std::string_view button_id, );

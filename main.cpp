@@ -1,11 +1,13 @@
-#include "agui.h"
 #include "sdl2_renderer_backend.h"
 #include <SDL2/SDL.h>
 #include <SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 #include <chrono>
+#include <iostream>
 #include <print>
 #include <thread>
+#include "agui.h"
+#include "widgets.h"
 
 template<std::size_t FPS>
 class Timer
@@ -88,17 +90,21 @@ int main()
     AGUI::SDL2::impl_backend (window, renderer);
 
     AGUI::create_frame ("Test Frame 1", 100, 100, 600, 400);
-    AGUI::create_frame ("Test Frame 2", 800, 100, 600, 400);
 
-    std::string s{};
+    [[maybe_unused]]
+    AGUI::Button* button = AGUI::create_button("Test Frame 1", "Button", 0, 0);
 
-    for (int i = 33; i < 127; ++i)
-        s += i;
+    // AGUI::create_frame ("Test Frame 2", 800, 100, 600, 400);
+
+    // std::string s{};
+
+    // for (int i = 33; i < 127; ++i)
+    //     s += i;
     
-    for (int i = 0; i < 100; ++i)
-    {
-        AGUI::create_label("Test Frame 2", s, 0, i * 24);
-    }
+    // for (int i = 0; i < 100; ++i)
+    // {
+    //     AGUI::create_label("Test Frame 2", s, 0, i * 24);
+    // }
 
     bool running = true;
 

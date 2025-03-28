@@ -2,6 +2,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include "shapes.h"
 #include "widgets.h"
 
 namespace
@@ -12,7 +13,7 @@ namespace
 /* default style */
 AGUI::Style::Style ()
 {
-    bg_frame    = black;
+    bg_frame    = frame_bg;
     bd_color    = button_border;
     hover_color = button_hover;
     click_color = button_click;
@@ -40,13 +41,15 @@ void AGUI::create_frame (std::string name, float x, float y, float w, float h, c
     ctx.order_map[name] = std::prev (ctx.frame_order.end());
 }
 
-void AGUI::create_button (std::string frame_id, std::string label, float x, float y)
+AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y)
 {
     AGUI_ASSERT (ctx.frames_map.contains(frame_id) && "Frame does not exist");
 
     AGUI_ASSERT (!(*ctx.frames_map[frame_id])->has_widget_id(label + "##Button") && "Button already has that label");
-
-    (*ctx.frames_map[frame_id])->add_widget(std::make_shared<Button> (label, x, y));
+    
+    auto button = std::make_shared<Button> (label, x, y);
+    (*ctx.frames_map[frame_id])->add_widget(button);
+    return button.get();
 }
 
 void AGUI::create_label  (std::string frame_id, std::string text, float x, float y)
@@ -82,7 +85,6 @@ void AGUI::update (void)
     });
 }
 
-
 AGUI::Frame::Frame (std::string _name, float x, float y, float w, float h, const Style& _style)
 : name {_name}
 , position {x,y}
@@ -92,11 +94,11 @@ AGUI::Frame::Frame (std::string _name, float x, float y, float w, float h, const
     merge_style(style, ctx.style);
     float bd_width = style.bd_width.value();
     float padding  = style.padding.value();
-    frame_bar  = Rect (0, 0, w + style.padding.value(), 35 + padding);
-    content    = Rect (0, 40, w + style.padding.value(), h - 40);
-    border     = Rect (-bd_width, -bd_width, w + bd_width + style.padding.value(), h + bd_width);
-    resize_box = Rect (w - 15 + padding, h - 15, 15, 15);
-
+    
+    frame_bar  = Rect (0, 0, w + style.padding.value(), 33 + (padding*2));
+    content    = Rect (0, frame_bar.get_height(), frame_bar.get_width(), h + frame_bar.get_height());
+    border     = Rect (-bd_width, -bd_width, frame_bar.get_width() + (bd_width * 2), frame_bar.get_height() + content.get_height() + (bd_width*2));
+    resize_box = Rect (frame_bar.get_width() - 15, border.get_height() - 15 - bd_width, 15, 15);
 
     int tx = 0;
     int ty = 0;
@@ -115,36 +117,51 @@ void AGUI::Frame::draw (void)
 
     resize();
 
+    /* frame bar  */
     frame_bar.translate({position.x, position.y});
     io.backend->draw_fill_rect(frame_bar, AGUI::frame_bar);
     frame_bar.translate({-position.x, -position.y});
 
-    content.translate({position.x, position.y});
-    io.backend->draw_fill_rect(content, style.bg_frame.value());
-    content.translate({-position.x, -position.y});
-
-    resize_box.translate({position.x, position.y});
-    io.backend->draw_fill_rect(resize_box, style.bd_color.value());
-    resize_box.translate({-position.x, -position.y});
-
+    /* border */
     border.translate({position.x, position.y});
     io.backend->draw_rect(border, style.bd_color.value());
     border.translate({-position.x, -position.y});
     
     text ({position.x + padding, position.y + padding}, "{}", name);
 
+    /* minimize button */
     minimize_button->translate({position.x, position.y + padding});
     minimize_button->draw();
     minimize_button->translate({-position.x, -position.y - padding});
 
+    /* close button */
     close_button->translate({position.x, position.y + padding});
     close_button->draw();
     close_button->translate({-position.x, -position.y - padding});
 
+    minimize_button->click_event([&]() 
+    { 
+        if (minimized)
+        {
+            border.set_size_h(content.get_height() + frame_bar.get_height() + style.bd_width.value());
+            minimized = false;
+        }
+        else
+        {
+            border.set_size_h(frame_bar.get_height());
+            minimized = true;
+        }
+    });
+
+    if (minimized)
+        return;
+
+
+    draw_content();
+
     content.translate({position.x, position.y});
     io.backend->begin_clip (content);
     content.translate({-position.x, -position.y});
-
 
     content.translate({position.x, position.y});
     for (auto& widget : widgets)
@@ -161,8 +178,30 @@ void AGUI::Frame::draw (void)
 
 }
 
+void AGUI::Frame::draw_content (void)
+{
+    IO& io = get_io();
+
+    /* content */
+    content.translate({position.x, position.y});
+    io.backend->draw_fill_rect(content, style.bg_frame.value());
+    content.translate({-position.x, -position.y});
+
+    /* resize */
+    resize_box.translate({position.x, position.y});
+    io.backend->draw_fill_rect(resize_box, style.bd_color.value());
+    resize_box.translate({-position.x, -position.y}); 
+}
+
 bool AGUI::Frame::move (void)
 {
+    bool no_move = false;
+    minimize_button->hold_event ([&no_move](){no_move = true;});
+    close_button->hold_event([&no_move](){no_move = true;});
+
+    if (no_move)
+        return true;
+
     IO& io = get_io();
 
     if (io.mouse_down && !mouse_was_down)
@@ -175,7 +214,7 @@ bool AGUI::Frame::move (void)
         mouse_was_down = false;
         frame_bar_selected = false;
     }
-
+    
     {
         frame_bar.translate ({position.x, position.y});
         bool check = frame_bar.contains(mouse_down_pos);
@@ -228,8 +267,8 @@ void AGUI::Frame::resize (void)
         if (check)
         {
             resizing = true;
-            resize_offset.x  = io.mouse_pos.x - border.get_size().x + style.bd_width.value();
-            resize_offset.y  = io.mouse_pos.y - border.get_size().y + style.bd_width.value();
+            resize_offset.x  = io.mouse_pos.x - border.get_width() + style.bd_width.value();
+            resize_offset.y  = io.mouse_pos.y - border.get_height() + style.bd_width.value();
         }
     }
     else if (resizing && !io.mouse_down)
@@ -240,11 +279,15 @@ void AGUI::Frame::resize (void)
         int x = 0;
         int y = 0;
         io.backend->calc_text_size(name, &x, &y);
-        float min = (float)x + (style.padding.value() * 2) + style.padding.value() + (33 * 2) + style.padding.value();
-        float clamp_x = std::clamp (io.mouse_pos.x - resize_offset.x, min, std::numeric_limits<float>::infinity());
-        float clamp_y = std::clamp (io.mouse_pos.y - resize_offset.y, frame_bar.get_height() + resize_box.get_height(), std::numeric_limits<float>::infinity());
-        frame_bar.set_size_w (clamp_x);
-        content.set_size     ({clamp_x, clamp_y});
+
+        float bd_width = style.bd_width.value();
+        float padding  = style.padding.value();
+        float min      = (float)x + (padding * 2) + padding + (33 * 2) + padding;
+        float clamp_x  = std::clamp (io.mouse_pos.x - resize_offset.x, min, std::numeric_limits<float>::infinity());
+        float clamp_y  = std::clamp (io.mouse_pos.y - resize_offset.y, frame_bar.get_height() + resize_box.get_height(), std::numeric_limits<float>::infinity());
+        
+        frame_bar.set_size_w (clamp_x - bd_width);
+        content.set_size     ({clamp_x - bd_width, clamp_y - bd_width});
         border.set_size      ({clamp_x, clamp_y});
         resize_box.set_pos   
         (
@@ -253,8 +296,8 @@ void AGUI::Frame::resize (void)
                 clamp_y - resize_box.get_height()
             }
         );
-        minimize_button->move({frame_bar.get_width() - 68 - style.padding.value(), 0});
-        close_button->move({frame_bar.get_width() - 33 - style.padding.value(), 0});
+        minimize_button->move({frame_bar.get_width() - 68 - padding, 0});
+        close_button->move({frame_bar.get_width() - 33 - padding, 0});
     }
 }
 
