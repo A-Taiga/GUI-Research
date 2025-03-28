@@ -104,9 +104,15 @@ void AGUI::Button::move (const Point& p)
 void AGUI::Button::hover (void)
 {
     if (box.contains (get_io().mouse_pos))
+    {
         current_bg_color = style_sheet.hover_color.value();
+        hovering = true;
+    }
     else
+    {
         current_bg_color = style_sheet.bg_button.value();
+        hovering = false;
+    }
 }
 
 void AGUI::Button::click (void)
@@ -116,6 +122,7 @@ void AGUI::Button::click (void)
     if (!flag && io.mouse_down)
     {
         down_pos = io.mouse_pos;
+        flag = true;
     }
     else if (!io.mouse_down)
     {
@@ -129,16 +136,37 @@ void AGUI::Button::click (void)
         current_bg_color = style_sheet.click_color.value();
     else if (!box.contains(io.mouse_pos))
         current_bg_color = style_sheet.bg_button.value();
+
+
+    if (box.contains (io.mouse_pos) && box.contains (down_pos))
+        holding = true;
+    else if (!box.contains(io.mouse_pos) && !io.mouse_down)
+        holding = false;
 }
 
-void AGUI::Button::event (void)
+void AGUI::Button::click_event (std::function <void()> cb)
 {
-    event_cb();
+    if (register_click)
+    {
+        cb();
+        register_click = false;
+    }
 }
 
-void AGUI::Button::set_event_cb (std::function<void(void)> f)
+void AGUI::Button::hover_event (std::function <void()> cb)
 {
-    event_cb = f;
+    if (hovering)
+    {
+        cb();
+    }
+}
+
+void AGUI::Button::hold_event (std::function <void()> cb)
+{
+    if (holding)
+    {
+        cb();
+    }
 }
 
 /* LABEL */

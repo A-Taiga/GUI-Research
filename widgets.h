@@ -18,7 +18,6 @@ namespace AGUI
         virtual std::string   ID        (void) const   = 0;
         virtual Point         position  (void) const   = 0;
         virtual Vec2          size      (void) const   = 0;
-
         virtual const Style&  style     (void) const   = 0;
         virtual void          move      (const Point&) = 0;
     };
@@ -38,20 +37,23 @@ namespace AGUI
             virtual void        move         (const Point&) override;
             virtual void        hover        (void);
             virtual void        click        (void);
-            virtual void        event        (void);
-            void                set_event_cb (std::function<void(void)>);
+            virtual void        click_event  (std::function <void()>);
+            virtual void        hover_event  (std::function <void()>);
+            virtual void        hold_event   (std::function <void()>);
 
         private:
             std::string label;
             Style       style_sheet;
             Rect        box;
             Rect        border;
-            int         label_w = 0;
-            int         label_h = 0;
             color_t     current_bg_color;
-            bool        flag = false;
+            int         label_w        = 0;
+            int         label_h        = 0;
+            bool        flag           = false;
             bool        register_click = false;
-            Point       down_pos = {-1,-1};
+            Point       down_pos       = {-1,-1};
+            bool        hovering       = false;
+            bool        holding        = false;
 
             std::function <void()> event_cb;
     };
@@ -69,7 +71,6 @@ namespace AGUI
             const Style&          style     (void) const final;
             virtual void          move      (const Point&) override;
             
-
         private:
             std::string text;
             Style style_sheet;
