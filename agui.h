@@ -13,13 +13,12 @@
 
 #define AGUI_ASSERT(x) assert (x);
 
-
 namespace AGUI
 {
     class Button;
+    class Label;
     struct Widget;
     class Rect;
-
 
     using color_t = uint32_t;
     static constexpr color_t clear             = 0x00000000;
@@ -81,8 +80,6 @@ namespace AGUI
 
 
         private:
-
-            void draw_content (void);
 
             std::string name;
             Point       position;
@@ -154,11 +151,12 @@ namespace AGUI
     void update (void);
 
     void create_frame  (std::string name, float x, float y, float w, float h, const Style& = {});
+    
     Button* create_button (std::string frame_id, std::string label, float x, float y);
-    void create_label  (std::string frame_id, std::string text, float x, float y);
+    Button* create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& = {});
 
-    // void add_button_cb (std::string_view frame_id, std::string_view button_id, );
 
+    Label* create_label  (std::string frame_id, std::string text, float x, float y);
 
     inline void set_color (color_t c) {get_io().font_color = c;}
     

@@ -52,11 +52,27 @@ AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, floa
     return button.get();
 }
 
-void AGUI::create_label  (std::string frame_id, std::string text, float x, float y)
+
+AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& style)
+{
+    AGUI_ASSERT (ctx.frames_map.contains(frame_id) && "Frame does not exist");
+
+    AGUI_ASSERT (!(*ctx.frames_map[frame_id])->has_widget_id(label + "##Button") && "Button already has that label");
+    
+    auto button = std::make_shared<Button> (label, x, y, w, h, style);
+    (*ctx.frames_map[frame_id])->add_widget(button);
+    return button.get();
+}
+
+AGUI::Label* AGUI::create_label  (std::string frame_id, std::string text, float x, float y)
 {
     AGUI_ASSERT(ctx.frames_map.contains(frame_id) && "Frame does not exist");
 
-    (*ctx.frames_map[frame_id])->add_widget(std::make_shared<Label> (text, x, y));
+    
+    auto label = std::make_shared<Label> (text, x, y);
+    (*ctx.frames_map[frame_id])->add_widget(label);
+
+    return label.get();
 }
 
 void AGUI::update (void) 
@@ -157,40 +173,38 @@ void AGUI::Frame::draw (void)
         return;
 
 
-    draw_content();
+    /* content */
+    content.translate({position.x, position.y});
+    io.backend->draw_fill_rect(content, style.bg_frame.value());
+    content.translate({-position.x, -position.y});
 
     content.translate({position.x, position.y});
     io.backend->begin_clip (content);
     content.translate({-position.x, -position.y});
 
     content.translate({position.x, position.y});
+
     for (auto& widget : widgets)
     {
         const float fh = frame_bar.get_height();
         widget->translate({position.x + padding, position.y + fh + padding});
+        /* render clipping */
         if (widget->position().y + widget->size().y < content.get_max().y + 50)
             widget->draw();
         widget->translate({-position.x - padding, -position.y - fh - padding});
     }
+
+
     content.translate({-position.x, -position.y});
 
     io.backend->end_clip();
 
-}
-
-void AGUI::Frame::draw_content (void)
-{
-    IO& io = get_io();
-
-    /* content */
-    content.translate({position.x, position.y});
-    io.backend->draw_fill_rect(content, style.bg_frame.value());
-    content.translate({-position.x, -position.y});
 
     /* resize */
     resize_box.translate({position.x, position.y});
     io.backend->draw_fill_rect(resize_box, style.bd_color.value());
     resize_box.translate({-position.x, -position.y}); 
+
 }
 
 bool AGUI::Frame::move (void)
@@ -214,7 +228,7 @@ bool AGUI::Frame::move (void)
         mouse_was_down = false;
         frame_bar_selected = false;
     }
-    
+
     {
         frame_bar.translate ({position.x, position.y});
         bool check = frame_bar.contains(mouse_down_pos);

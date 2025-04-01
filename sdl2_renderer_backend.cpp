@@ -48,6 +48,8 @@ AGUI::SDL2::Backend::Backend (SDL_Window* _window, SDL_Renderer* _renderer)
         exit(EXIT_FAILURE);
     }
 
+    
+
     char i = 0;
     for (auto& character : character_map)
     {
@@ -113,7 +115,6 @@ void AGUI::SDL2::Backend::end_clip () const
 {
     SDL_RenderSetClipRect (renderer, nullptr);
 }
-
 
 void AGUI::SDL2::Backend::draw_text (const Vec2& pos, std::string_view str, color_t color) const
 {

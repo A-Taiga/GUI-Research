@@ -86,30 +86,22 @@ int main()
         return -1;
     }
     
-
     AGUI::SDL2::impl_backend (window, renderer);
 
     AGUI::create_frame ("Test Frame 1", 100, 100, 600, 400);
 
-    [[maybe_unused]]
-    AGUI::Button* button = AGUI::create_button("Test Frame 1", "Button", 0, 0);
+    // AGUI::Button* button = AGUI::create_button("Test Frame 1", "Button", 0, 0);
 
-    // AGUI::create_frame ("Test Frame 2", 800, 100, 600, 400);
+    // std::vector <AGUI::Button> buttons;
+    AGUI::Style style;
+    style.padding = 10;
 
-    // std::string s{};
 
-    // for (int i = 33; i < 127; ++i)
-    //     s += i;
     
-    // for (int i = 0; i < 100; ++i)
-    // {
-    //     AGUI::create_label("Test Frame 2", s, 0, i * 24);
-    // }
-
     bool running = true;
 
-    Timer<2000> timer;
-    FPS_Counter<2000> fps_counter;
+    Timer<60> timer;
+    FPS_Counter<60> fps_counter;
     
     while (running)
     {

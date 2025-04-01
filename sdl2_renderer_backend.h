@@ -43,6 +43,8 @@ namespace AGUI::SDL2
 
     void impl_backend  (SDL_Window*, SDL_Renderer*);
     void impl_event    (const SDL_Event*);
+
+
 }
 
 #endif

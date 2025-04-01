@@ -70,7 +70,6 @@ namespace AGUI
             virtual Vec2          size      (void) const override;
             const Style&          style     (void) const final;
             virtual void          move      (const Point&) override;
-            
         private:
             std::string text;
             Style style_sheet;
