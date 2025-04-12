@@ -1,0 +1,27 @@
+---
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeComma
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: true
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeParens: NonEmptyParentheses
+AllowAllArgumentsOnNextLine: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortCompoundRequirementOnASingleLine: true
+AlignConsecutiveDeclarations:
+  Enabled: true
+ColumnLimit: 0
+TabWidth: 4
+PointerAlignment: Left
+AlignConsecutiveAssignments:
+  Enabled: true
+AlignConsecutiveBitFields:
+  Enabled: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+AlignConsecutiveTableGenBreakingDAGArgColons:
+  Enabled: true

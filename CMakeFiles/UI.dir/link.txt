@@ -1,0 +1,1 @@
+clang++  -Wall -Wextra -Werror -g -fsanitize=address -Wl,--dependency-file=CMakeFiles/UI.dir/link.d CMakeFiles/UI.dir/main.cpp.o CMakeFiles/UI.dir/sdl2_renderer_backend.cpp.o CMakeFiles/UI.dir/agui.cpp.o CMakeFiles/UI.dir/shapes.cpp.o CMakeFiles/UI.dir/widgets.cpp.o -o UI  /usr/lib/libSDL2-2.0.so.0.3200.54 /usr/lib/libSDL2_ttf.so

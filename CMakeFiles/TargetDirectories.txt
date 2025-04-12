@@ -1,0 +1,3 @@
+/home/anthony/Workspace/ui/CMakeFiles/UI.dir
+/home/anthony/Workspace/ui/CMakeFiles/edit_cache.dir
+/home/anthony/Workspace/ui/CMakeFiles/rebuild_cache.dir
