@@ -15,7 +15,8 @@ AllowShortCompoundRequirementOnASingleLine: true
 AlignConsecutiveDeclarations:
   Enabled: true
 ColumnLimit: 0
-TabWidth: 4
+TabWidth:        4
+IndentWidth:     4
 PointerAlignment: Left
 AlignConsecutiveAssignments:
   Enabled: true
@@ -25,3 +26,4 @@ AlignConsecutiveShortCaseStatements:
   Enabled: true
 AlignConsecutiveTableGenBreakingDAGArgColons:
   Enabled: true
+NamespaceIndentation: All
