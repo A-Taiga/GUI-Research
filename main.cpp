@@ -1,5 +1,6 @@
 #include "agui.h"
 #include "sdl2_renderer_backend.h"
+#include "widgets.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL_render.h>
@@ -102,10 +103,12 @@ int main()
 
     AGUI::SDL2::impl_backend (window, renderer);
 
-    [[maybe_unused]]
-    auto frame_options = AGUI::Frame::No_move | AGUI::Frame::No_close | AGUI::Frame::No_minimize | AGUI::Frame::No_resize | AGUI::Frame::No_bar;
-
-    AGUI::create_frame ("Test Frame 2", 0, 0, 500, 500);
+    AGUI::Button* b1 = nullptr;
+    FRAME ("Test Frame 1", 500, 100, 600, 500)
+    {
+        b1 = BUTTON ("Button 1", 0, 0);
+        BUTTON ("Button 2", 0, 100);
+    }
 
     bool running = true;
 
@@ -144,6 +147,9 @@ int main()
         SDL_GetWindowSize (window, &w, &h);
 
         AGUI::text ({0, 50}, "window size: {}, {}", w, h);
+
+        b1->hover_event ([]()
+                         { AGUI::text ({0, 100}, "HOVER"); });
 
         AGUI::update();
         SDL_RenderPresent (renderer);

@@ -26,13 +26,22 @@ AGUI::IO& AGUI::get_io (void) { return ctx.io; }
 
 const AGUI::Style& AGUI::get_style (void) { return ctx.style; }
 
-void AGUI::create_frame (std::string name, float x, float y, float w, float h, uint32_t options, const Style& style)
+std::shared_ptr<AGUI::Frame> AGUI::create_frame (std::string name, float x, float y, float w, float h, uint32_t options, const Style& style)
 {
     AGUI_ASSERT (! ctx.frames_map.contains (name) && "Frame id already in use");
     ctx.frames.push_back (std::make_shared<Frame> (name, x, y, w, h, options, style));
     ctx.frames_map[name] = std::prev (ctx.frames.end());
     ctx.frame_order.push_back (ctx.frames.back());
     ctx.order_map[name] = std::prev (ctx.frame_order.end());
+    return ctx.frames.back();
+}
+
+AGUI::Button* AGUI::create_button (std::string label, float x, float y)
+{
+    auto current_frame = ctx.frames.back();
+    auto button        = std::make_shared<Button> (label, x, y);
+    ctx.frames.back()->add_widget (button);
+    return button.get();
 }
 
 AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y)

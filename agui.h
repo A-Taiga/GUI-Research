@@ -151,13 +151,52 @@ namespace AGUI
         std::unordered_map<std::string, std::list<weak_frame_t>::iterator>   order_map;
     };
 
-    IO&                get_io (void);
-    const AGUI::Style& get_style (void);
-    void               set_backend (std::unique_ptr<Backend>);
-    void               update (void);
-    void               create_frame (std::string name, float x, float y, float w, float h, uint32_t optison = Frame::None, const Style& = {});
+    IO&                    get_io (void);
+    const AGUI::Style&     get_style (void);
+    void                   set_backend (std::unique_ptr<Backend>);
+    void                   update (void);
+    std::shared_ptr<Frame> create_frame (std::string name, float x, float y, float w, float h, uint32_t optison = Frame::None, const Style& = {});
+    /*
 
+
+    void AGUI::create_frame (std::string name, float x, float y, float w, float h, uint32_t options, const Style& style)
+    {
+        AGUI_ASSERT (! ctx.frames_map.contains (name) && "Frame id already in use");
+        ctx.frames.push_back (std::make_shared<Frame> (name, x, y, w, h, options, style));
+        ctx.frames_map[name] = std::prev (ctx.frames.end());
+        ctx.frame_order.push_back (ctx.frames.back());
+        ctx.order_map[name] = std::prev (ctx.frame_order.end());
+    }
+
+     */
+
+    Button* create_button (std::string label, float x, float y);
     Button* create_button (std::string frame_id, std::string label, float x, float y);
+
+#define RESQ_N() 7, 6, 5, 4, 3, 2, 1
+#define ARG_N(_1, _2, _3, _4, _5, _6, _7, N, ...) N
+#define ARG_COUNT_IMPL(...) ARG_N (__VA_ARGS__)
+#define ARG_COUNT(...) ARG_COUNT_IMPL (__VA_ARGS__, RESQ_N())
+
+#define DISPATCH_NAME(name, n) name##n
+#define DISPATCH_IMPL(name, n) DISPATCH_NAME (name, n)
+#define DISPATCH(name, ...) DISPATCH_IMPL (name, ARG_COUNT (__VA_ARGS__)) (__VA_ARGS__)
+
+#define FRAME5(name, x, y, w, h) \
+    AGUI::create_frame (name, x, y, w, h);
+
+#define FRAME(...)                              \
+    auto frame = DISPATCH (FRAME, __VA_ARGS__); \
+    for (int i = 0; i < 1; i = 1)
+
+#define BUTTON3(name, x, y) \
+    AGUI::create_button (name, x, y);
+
+#define BUTTON(...) \
+    DISPATCH (BUTTON, __VA_ARGS__)
+
+#define VSTACK
+
     Button* create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& = {});
     Label*  create_label (std::string frame_id, std::string text, float x, float y);
 
