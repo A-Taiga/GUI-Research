@@ -16,7 +16,7 @@ namespace AGUI
     struct Stackable
     {
         virtual ~Stackable() {};
-        virtual void  draw()                   = 0;
+        virtual void  draw (const Vec2&)       = 0;
         virtual void  translate (const Point&) = 0;
         virtual Vec2  size() const             = 0;
         virtual Point position (void) const    = 0;
@@ -40,7 +40,7 @@ namespace AGUI
         void  translate (const Point& p) override final;
         Point position() const override final;
         Vec2  size (void) const override final;
-        void  draw (void) override = 0;
+        void  draw (const Vec2&) override = 0;
 
       protected:
         std::vector<std::shared_ptr<Stackable>> collection;
@@ -53,7 +53,7 @@ namespace AGUI
       public:
         Hstack (std::vector<std::shared_ptr<Stackable>>&&);
         ~Hstack() {}
-        void draw (void) override;
+        void draw (const Vec2&) override;
     };
 
     class Vstack : public Layout_stack
@@ -61,7 +61,7 @@ namespace AGUI
       public:
         Vstack (std::vector<std::shared_ptr<Stackable>>&& v);
         ~Vstack() {}
-        void draw() override;
+        void draw (const Vec2&) override;
     };
 
 } // namespace AGUI

@@ -181,14 +181,11 @@ void AGUI::Frame::draw (void)
 
     content.translate (position);
     io.backend->begin_clip (content);
-    content.translate ({-position.x, -position.y});
-
-    content.translate (position);
     for (auto& c : collection)
     {
         const float fh = frame_bar.get_height();
         c->translate ({position.x + padding, position.y + fh + padding});
-        c->draw();
+        c->draw ({content.get_max().x, content.get_max().y});
         c->translate ({-position.x - padding, -position.y - fh - padding});
     }
     content.translate ({-position.x, -position.y});

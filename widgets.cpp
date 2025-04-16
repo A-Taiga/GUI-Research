@@ -33,7 +33,7 @@ AGUI::Button::Button (std::string _label, float x, float y, const Style& style)
     border = Rect (x - bd_width, y - bd_width, box.get_width() + bd_width, box.get_height() + bd_width);
 }
 
-void AGUI::Button::draw (void)
+void AGUI::Button::draw (const Vec2&)
 {
     AGUI::IO& io = AGUI::get_io();
     io.backend->draw_fill_rect (box, current_bg_color);
@@ -191,7 +191,7 @@ AGUI::Label::Label (std::string _text, float x, float y, float w, float h)
     border         = Rect (x - bd_width, y - bd_width, w + bd_width, h + bd_width);
 }
 
-void AGUI::Label::draw (void)
+void AGUI::Label::draw (const Vec2&)
 {
     IO& io = get_io();
 

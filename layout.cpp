@@ -74,13 +74,14 @@ AGUI::Hstack::Hstack (std::vector<std::shared_ptr<Stackable>>&& v)
     }
 }
 
-void AGUI::Hstack::draw (void)
+void AGUI::Hstack::draw (const Vec2& clip)
 {
     float prev_x = 0;
     for (auto& c : collection)
     {
         c->translate ({pos.x + prev_x, pos.y});
-        c->draw();
+        if (c->position().x < clip.x)
+            c->draw (clip);
         c->translate ({-pos.x - prev_x, -pos.y});
         prev_x = prev_x + c->size().x + 5;
     }
@@ -96,13 +97,14 @@ AGUI::Vstack::Vstack (std::vector<std::shared_ptr<Stackable>>&& v)
     }
 }
 
-void AGUI::Vstack::draw (void)
+void AGUI::Vstack::draw (const Vec2& clip)
 {
     float prev_y = 0;
     for (auto& c : collection)
     {
         c->translate ({pos.x, pos.y + prev_y});
-        c->draw();
+        if (c->position().y < clip.y)
+            c->draw (clip);
         c->translate ({-pos.x, -pos.y - prev_y});
         prev_y = prev_y + c->size().y + 5;
     }

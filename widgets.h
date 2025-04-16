@@ -14,7 +14,7 @@ namespace AGUI
     struct Widget
     {
         virtual ~Widget (void) {}
-        virtual void         draw (void)             = 0;
+        virtual void         draw (const Vec2&)      = 0;
         virtual void         translate (const Vec2&) = 0;
         virtual std::string  ID (void) const         = 0;
         virtual Point        position (void) const   = 0;
@@ -29,7 +29,7 @@ namespace AGUI
         Button (std::string _label, float x, float y, float w, float h, const Style& = {});
         Button (std::string _label, float x, float y, const Style& = {});
         virtual ~Button() {}
-        virtual void        draw (void) override;
+        virtual void        draw (const Vec2& = {}) override;
         virtual void        translate (const Vec2&) override;
         virtual std::string ID (void) const final override;
         virtual Point       position (void) const override;
@@ -65,7 +65,7 @@ namespace AGUI
         Label (std::string text, float x, float y);
         Label (std::string text, float x, float y, float w, float h);
         virtual ~Label() {}
-        virtual void  draw (void) override;
+        virtual void  draw (const Vec2& = {}) override;
         virtual void  translate (const Vec2&) override;
         std::string   ID (void) const final;
         virtual Point position (void) const override;
