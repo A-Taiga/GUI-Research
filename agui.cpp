@@ -181,6 +181,7 @@ void AGUI::Frame::draw (void)
     io.backend->draw_fill_rect (content, style.bg_frame.value());
     content.translate ({-position.x, -position.y});
 
+    /* collection */
     content.translate (position);
     io.backend->begin_clip (content);
     for (auto& c : collection)
@@ -273,7 +274,6 @@ bool AGUI::Frame::focus (void)
 
 bool AGUI::Frame::resize (void)
 {
-
     IO& io = get_io();
 
     if (minimized)
