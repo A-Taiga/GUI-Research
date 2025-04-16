@@ -50,3 +50,60 @@ AGUI::Stack_state& AGUI::get_stack_state()
 {
     return stack_state;
 }
+
+AGUI::Layout_stack::Layout_stack (std::vector<std::shared_ptr<Stackable>>&& v)
+    : collection (std::move (v))
+    , _size (0, 0)
+{
+}
+void AGUI::Layout_stack::translate (const Point& p)
+{
+    pos.x += p.x;
+    pos.y += p.y;
+}
+AGUI::Point AGUI::Layout_stack::position() const { return pos; }
+AGUI::Vec2  AGUI::Layout_stack::size() const { return _size; }
+
+AGUI::Hstack::Hstack (std::vector<std::shared_ptr<Stackable>>&& v)
+    : Layout_stack (std::move (v))
+{
+    for (const auto& i : collection)
+    {
+        _size.x = std::max (_size.x, i->size().x);
+        _size.y = std::max (_size.y, i->size().y);
+    }
+}
+
+void AGUI::Hstack::draw (void)
+{
+    float prev_x = 0;
+    for (auto& c : collection)
+    {
+        c->translate ({pos.x + prev_x, pos.y});
+        c->draw();
+        c->translate ({-pos.x - prev_x, -pos.y});
+        prev_x = prev_x + c->size().x + 5;
+    }
+}
+
+AGUI::Vstack::Vstack (std::vector<std::shared_ptr<Stackable>>&& v)
+    : Layout_stack (std::move (v))
+{
+    for (const auto& i : collection)
+    {
+        _size.x = std::max (_size.x, i->size().x);
+        _size.y = std::max (_size.y, i->size().y);
+    }
+}
+
+void AGUI::Vstack::draw (void)
+{
+    float prev_y = 0;
+    for (auto& c : collection)
+    {
+        c->translate ({pos.x, pos.y + prev_y});
+        c->draw();
+        c->translate ({-pos.x, -pos.y - prev_y});
+        prev_y = prev_y + c->size().y + 5;
+    }
+}
