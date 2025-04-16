@@ -10,7 +10,6 @@ void AGUI::stack_begin()
     if (! stack_state.current_collection.empty())
     {
         stack_state.collection.push_back (std::move (stack_state.current_collection));
-        // stack_state.collection.insert (stack_state.collection.end(), stack_state.current_collection.begin(), stack_state.current_collection.end());
         stack_state.current_collection = {};
     }
 }
