@@ -126,7 +126,8 @@ namespace AGUI
         Frame (std::string name, float x, float y, float w, float h, uint32_t = None, const Style& = {});
         void        draw (void);
         bool        move (void);
-        void        resize (void);
+        bool        focus (void);
+        bool        resize (void);
         std::string ID (void) const;
         void        add_element (std::shared_ptr<Stackable>);
 

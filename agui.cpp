@@ -74,6 +74,10 @@ void AGUI::update (void)
     for (auto it = ctx.frame_order.begin(); it != ctx.frame_order.end(); ++it)
     {
         auto frame = it->lock();
+
+        if (frame->resize())
+            break;
+
         if (frame->move())
         {
             if (ctx.focused_frame.expired())
@@ -256,13 +260,26 @@ bool AGUI::Frame::move (void)
     return false;
 }
 
-void AGUI::Frame::resize (void)
+bool AGUI::Frame::focus (void)
+{
+    IO& io = get_io();
+    border.translate (position);
+    bool check = border.contains (io.mouse_pos);
+    border.translate ({-position.x, -position.y});
+    if (io.mouse_down && check)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool AGUI::Frame::resize (void)
 {
 
     IO& io = get_io();
 
     if (minimized)
-        return;
+        return false;
 
     if (! resizing && io.mouse_down)
     {
@@ -272,11 +289,9 @@ void AGUI::Frame::resize (void)
 
         if (check)
         {
-            resizing = true;
-            resize_offset.x =
-                io.mouse_pos.x - border.get_width() + style.bd_width.value();
-            resize_offset.y =
-                io.mouse_pos.y - border.get_height() + style.bd_width.value();
+            resizing        = true;
+            resize_offset.x = io.mouse_pos.x - border.get_width() + style.bd_width.value();
+            resize_offset.y = io.mouse_pos.y - border.get_height() + style.bd_width.value();
         }
     }
     else if (resizing && ! io.mouse_down)
@@ -301,7 +316,9 @@ void AGUI::Frame::resize (void)
 
         minimize_button->move ({frame_bar.get_width() - 68 - padding, 0});
         close_button->move ({frame_bar.get_width() - 33 - padding, 0});
+        return true;
     }
+    return false;
 }
 
 std::string AGUI::Frame::ID (void) const { return name; }
