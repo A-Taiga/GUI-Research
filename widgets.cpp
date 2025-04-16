@@ -39,28 +39,9 @@ void AGUI::Button::draw (const Vec2&)
     io.backend->draw_fill_rect (box, current_bg_color);
     io.backend->draw_rect (border, AGUI::button_border);
 
-    // AGUI::print ({box.get_center().x - (label_w * .5f), box.get_center().y - (box.get_height() * .5f) + 5}, "{}", label);
-
-    Vec2 p =
-        {
-            box.get_center().x - (label_w * .5f),
-            box.get_center().y - (label_h * .5f)};
+    Vec2 p = {box.get_center().x - (label_w * .5f), box.get_center().y - (label_h * .5f)};
 
     AGUI::text (p, "{}", label);
-
-    // io.backend->draw_rect({
-    //     p.x,
-    //     p.y,
-    //     (float)label_w,
-    //     (float)label_h
-    // }, red);
-
-    // io.backend->draw_rect({
-    //     box.get_center().x - (label_w * .5f),
-    //     box.get_center().y - (box.get_height() * .5f) + 5,
-    //     (float)label_w,
-    //     (float)label_h
-    // }, red);
 
     hover();
     click();
