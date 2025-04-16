@@ -59,10 +59,11 @@ namespace AGUI
         std::function<void()> event_cb;
     };
 
-    class Label : public Widget
+    class Label : public Widget, public Stackable
     {
       public:
         Label (std::string text, float x, float y);
+        Label (std::string text, float x, float y, float w, float h);
         virtual ~Label() {}
         virtual void  draw (void) override;
         virtual void  translate (const Vec2&) override;

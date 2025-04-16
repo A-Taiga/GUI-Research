@@ -171,10 +171,9 @@ namespace AGUI
     void                   update (void);
     std::shared_ptr<Frame> create_frame (std::string name, float x, float y, float w, float h, uint32_t optison = Frame::None, const Style& = {});
     Button*                create_button (std::string label, float x, float y);
-    Button*                create_button (std::string frame_id, std::string label, float x, float y);
     Button*                create_button (std::string label, float x, float y, float w, float h);
-    Button*                create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& = {});
-    Label*                 create_label (std::string frame_id, std::string text, float x, float y);
+    Label*                 create_label (std::string label, float x, float y);
+    Label*                 create_label (std::string label, float x, float y, float w, float h);
     inline void            set_color (color_t c) { get_io().font_color = c; }
     void                   frame_end();
 

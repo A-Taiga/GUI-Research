@@ -53,24 +53,19 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y, float w,
     return button.get();
 }
 
-AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y)
+AGUI::Label* AGUI::create_label (std::string text, float x, float y)
 {
-    AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
-    auto button = std::make_shared<Button> (label, x, y);
-    return button.get();
+    auto current_frame = ctx.frames.back();
+    auto label         = std::make_shared<Label> (text, x, y);
+    get_stack_state().current_collection.push_back (label);
+    return label.get();
 }
 
-AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& style)
+AGUI::Label* AGUI::create_label (std::string text, float x, float y, float w, float h)
 {
-    AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
-    auto button = std::make_shared<Button> (label, x, y, w, h, style);
-    return button.get();
-}
-
-AGUI::Label* AGUI::create_label (std::string frame_id, std::string text, float x, float y)
-{
-    AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
-    auto label = std::make_shared<Label> (text, x, y);
+    auto current_frame = ctx.frames.back();
+    auto label         = std::make_shared<Label> (text, x, y, w, h);
+    get_stack_state().current_collection.push_back (label);
     return label.get();
 }
 

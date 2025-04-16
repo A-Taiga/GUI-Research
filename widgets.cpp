@@ -168,6 +168,8 @@ void AGUI::Button::hold_event (std::function<void()> cb)
 /* LABEL */
 AGUI::Label::Label (std::string _text, float x, float y)
     : text (_text)
+    , text_w (0)
+    , text_h (0)
 {
     merge_style (style_sheet, get_style());
 
@@ -178,6 +180,15 @@ AGUI::Label::Label (std::string _text, float x, float y)
 
     box    = Rect (x, y, text_w + (padding * 2), text_h + (padding * 2));
     border = Rect (x - bd_width, y - bd_width, box.get_width() + bd_width, box.get_height() + bd_width);
+}
+
+AGUI::Label::Label (std::string _text, float x, float y, float w, float h)
+    : text (_text)
+{
+    merge_style (style_sheet, get_style());
+    float bd_width = style_sheet.bd_width.value();
+    box            = Rect (x, y, w, h);
+    border         = Rect (x - bd_width, y - bd_width, w + bd_width, h + bd_width);
 }
 
 void AGUI::Label::draw (void)

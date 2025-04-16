@@ -104,23 +104,27 @@ int main()
     {
         VSTACK()
         {
-            AGUI::create_button (" 1 ", 0, 0);
-            AGUI::create_button (" 2 ", 0, 0);
-
-            HSTACK()
+            AGUI::create_label ("Hello World!", 0, 0);
+            VSTACK()
             {
-                AGUI::create_button (" 3 ", 0, 0);
-                AGUI::create_button (" 4 ", 0, 0);
-                AGUI::create_button (" 5 ", 0, 0);
+                AGUI::create_button (" 1 ", 0, 0);
+                AGUI::create_button (" 2 ", 0, 0);
 
-                VSTACK()
+                HSTACK()
                 {
-                    AGUI::create_button (" 6 ", 0, 0);
-                    AGUI::create_button (" 7 ", 0, 0);
+                    AGUI::create_button (" 3 ", 0, 0);
+                    AGUI::create_button (" 4 ", 0, 0);
+                    AGUI::create_button (" 5 ", 0, 0);
+
+                    VSTACK()
+                    {
+                        AGUI::create_button (" 6 ", 0, 0);
+                        AGUI::create_button (" 7 ", 0, 0);
+                    }
                 }
+                AGUI::create_button (" 8 ", 0, 0);
+                AGUI::create_button (" 9 ", 0, 0);
             }
-            AGUI::create_button (" 8 ", 0, 0);
-            AGUI::create_button (" 9 ", 0, 0);
         }
     }
 
