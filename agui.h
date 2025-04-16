@@ -7,11 +7,34 @@
 #include <list>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #define TO_RGBA(C) (C >> 24) & 0xFF, (C >> 16) & 0xFF, (C >> 8) & 0xFF, C & 0xFF
 #define TO_RGB(C) (C >> 24) & 0xFF, (C >> 16) & 0xFF, (C >> 8) & 0xFF
 
 #define AGUI_ASSERT(x) assert (x);
+
+#define RESQ_N() 7, 6, 5, 4, 3, 2, 1
+#define ARG_N(_1, _2, _3, _4, _5, _6, _7, N, ...) N
+#define ARG_COUNT_IMPL(...) ARG_N (__VA_ARGS__)
+#define ARG_COUNT(...) ARG_COUNT_IMPL (__VA_ARGS__, RESQ_N())
+
+#define DISPATCH_NAME(name, n) name##n
+#define DISPATCH_IMPL(name, n) DISPATCH_NAME (name, n)
+#define DISPATCH(name, ...) DISPATCH_IMPL (name, ARG_COUNT (__VA_ARGS__)) (__VA_ARGS__)
+
+#define FRAME5(name, x, y, w, h) \
+    AGUI::create_frame (name, x, y, w, h);
+
+#define FRAME(...)                 \
+    DISPATCH (FRAME, __VA_ARGS__); \
+    for (int i = 0; i < 1; i = 1, AGUI::frame_end())
+
+#define BUTTON3(name, x, y) \
+    AGUI::create_button (name, x, y);
+
+#define BUTTON(...) \
+    DISPATCH (BUTTON, __VA_ARGS__)
 
 namespace AGUI
 {
@@ -19,6 +42,7 @@ namespace AGUI
     class Label;
     class Rect;
     struct Widget;
+    struct Stackable;
 
     using color_t                              = uint32_t;
     static constexpr color_t clear             = 0x00000000;
@@ -65,9 +89,30 @@ namespace AGUI
         merge (dst.padding, src.padding);
     }
 
+    struct Backend
+    {
+        virtual ~Backend (void) {}
+        virtual void draw_rect (const Rect&, const color_t) const                     = 0;
+        virtual void draw_fill_rect (const Rect&, const color_t) const                = 0;
+        virtual void begin_clip (const Rect&) const                                   = 0;
+        virtual void end_clip (void) const                                            = 0;
+        virtual void draw_text (const Vec2&, std::string_view, color_t = white) const = 0;
+        virtual void calc_text_size (std::string_view, int* w, int* h) const          = 0;
+    };
+
+    struct IO
+    {
+        Point                    mouse_pos;
+        bool                     mouse_down;
+        std::shared_ptr<Backend> backend;
+        const char*              font_path  = "/home/anthony/Workspace/ui/DroidSans.ttf";
+        int                      font_size  = 26;
+        color_t                  font_color = white;
+        IO() {};
+    };
+
     class Frame
     {
-
       public:
         enum Opt : uint32_t
         {
@@ -85,61 +130,34 @@ namespace AGUI
         std::string ID (void) const;
         void        add_widget (const std::shared_ptr<Widget>);
         bool        has_widget_id (const std::string&) const;
+        void        add_element (std::shared_ptr<Stackable>);
 
       private:
-        uint32_t    options;
-        std::string name;
-        Point       position;
-        Vec2        size;
-        Rect        frame_bar;
-        Rect        content;
-        Rect        border;
-        Rect        resize_box;
-        Style       style;
-        bool        minimized          = false;
-        bool        resizing           = false;
-        bool        frame_bar_selected = false;
-        bool        mouse_was_down     = false;
-        Point       mouse_down_pos;
-        Vec2        move_offset;
-        Vec2        resize_offset;
-
-        std::unique_ptr<Button> close_button;
-        std::unique_ptr<Button> minimize_button;
-
-        std::list<std::shared_ptr<Widget>> widgets;
-        std::unordered_map<std::string, std::list<std::shared_ptr<Widget>>::iterator>
-            widget_map;
-    };
-
-    struct Backend
-    {
-        virtual ~Backend (void) {}
-        virtual void draw_rect (const Rect&, const color_t) const                     = 0;
-        virtual void draw_fill_rect (const Rect&, const color_t) const                = 0;
-        virtual void begin_clip (const Rect&) const                                   = 0;
-        virtual void end_clip (void) const                                            = 0;
-        virtual void draw_text (const Vec2&, std::string_view, color_t = white) const = 0;
-        virtual void calc_text_size (std::string_view, int* w, int* h) const          = 0;
-    };
-
-    struct IO
-    {
-        Point                    mouse_pos;
-        bool                     mouse_down;
-        std::shared_ptr<Backend> backend;
-
-        const char* font_path  = "/home/anthony/Workspace/ui/DroidSans.ttf";
-        int         font_size  = 26;
-        color_t     font_color = white;
-
-        IO() {};
-        IO (IO&) = delete;
+        uint32_t                                                                      options;
+        std::string                                                                   name;
+        Point                                                                         position;
+        Vec2                                                                          size;
+        Rect                                                                          frame_bar;
+        Rect                                                                          content;
+        Rect                                                                          border;
+        Rect                                                                          resize_box;
+        Style                                                                         style;
+        bool                                                                          minimized          = false;
+        bool                                                                          resizing           = false;
+        bool                                                                          frame_bar_selected = false;
+        bool                                                                          mouse_was_down     = false;
+        Point                                                                         mouse_down_pos;
+        Vec2                                                                          move_offset;
+        Vec2                                                                          resize_offset;
+        std::unique_ptr<Button>                                                       close_button;
+        std::unique_ptr<Button>                                                       minimize_button;
+        std::list<std::shared_ptr<Widget>>                                            widgets;
+        std::unordered_map<std::string, std::list<std::shared_ptr<Widget>>::iterator> widget_map;
+        std::vector<std::shared_ptr<Stackable>>                                       collection;
     };
 
     using shared_frame_t = std::shared_ptr<Frame>;
     using weak_frame_t   = std::weak_ptr<Frame>;
-
     struct Context
     {
         IO                                                                   io;
@@ -156,51 +174,13 @@ namespace AGUI
     void                   set_backend (std::unique_ptr<Backend>);
     void                   update (void);
     std::shared_ptr<Frame> create_frame (std::string name, float x, float y, float w, float h, uint32_t optison = Frame::None, const Style& = {});
-    /*
-
-
-    void AGUI::create_frame (std::string name, float x, float y, float w, float h, uint32_t options, const Style& style)
-    {
-        AGUI_ASSERT (! ctx.frames_map.contains (name) && "Frame id already in use");
-        ctx.frames.push_back (std::make_shared<Frame> (name, x, y, w, h, options, style));
-        ctx.frames_map[name] = std::prev (ctx.frames.end());
-        ctx.frame_order.push_back (ctx.frames.back());
-        ctx.order_map[name] = std::prev (ctx.frame_order.end());
-    }
-
-     */
-
-    Button* create_button (std::string label, float x, float y);
-    Button* create_button (std::string frame_id, std::string label, float x, float y);
-
-#define RESQ_N() 7, 6, 5, 4, 3, 2, 1
-#define ARG_N(_1, _2, _3, _4, _5, _6, _7, N, ...) N
-#define ARG_COUNT_IMPL(...) ARG_N (__VA_ARGS__)
-#define ARG_COUNT(...) ARG_COUNT_IMPL (__VA_ARGS__, RESQ_N())
-
-#define DISPATCH_NAME(name, n) name##n
-#define DISPATCH_IMPL(name, n) DISPATCH_NAME (name, n)
-#define DISPATCH(name, ...) DISPATCH_IMPL (name, ARG_COUNT (__VA_ARGS__)) (__VA_ARGS__)
-
-#define FRAME5(name, x, y, w, h) \
-    AGUI::create_frame (name, x, y, w, h);
-
-#define FRAME(...)                              \
-    auto frame = DISPATCH (FRAME, __VA_ARGS__); \
-    for (int i = 0; i < 1; i = 1)
-
-#define BUTTON3(name, x, y) \
-    AGUI::create_button (name, x, y);
-
-#define BUTTON(...) \
-    DISPATCH (BUTTON, __VA_ARGS__)
-
-#define VSTACK
-
-    Button* create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& = {});
-    Label*  create_label (std::string frame_id, std::string text, float x, float y);
-
-    inline void set_color (color_t c) { get_io().font_color = c; }
+    Button*                create_button (std::string label, float x, float y);
+    Button*                create_button (std::string frame_id, std::string label, float x, float y);
+    Button*                create_button (std::string label, float x, float y, float w, float h);
+    Button*                create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& = {});
+    Label*                 create_label (std::string frame_id, std::string text, float x, float y);
+    inline void            set_color (color_t c) { get_io().font_color = c; }
+    void                   frame_end();
 
     template <class... Args>
     void text (const Vec2& pos, std::format_string<Args...> fmt, Args&&... args)

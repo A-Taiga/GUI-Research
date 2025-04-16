@@ -16,8 +16,8 @@ find_package(SDL2_ttf REQUIRED) # Find SDL_ttf
 include_directories(UI ${SDL2_INCLUDE_DIRS})
 include_directories(UI ${SDL2_ttf_INCLUDE_DIRS})
 
-add_executable(UI main.cpp sdl2_renderer_backend.cpp agui.cpp shapes.cpp widgets.cpp)
-target_include_directories (UI PUBLIC sdl2_renderer_backend.h agui.h shapes.h widgets.h utility.h)
+add_executable(UI main.cpp sdl2_renderer_backend.cpp agui.cpp shapes.cpp widgets.cpp layout.cpp)
+target_include_directories (UI PUBLIC sdl2_renderer_backend.h agui.h shapes.h widgets.h utility.h layout.h)
 
 target_link_libraries(UI PUBLIC SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 

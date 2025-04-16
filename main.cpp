@@ -1,6 +1,6 @@
 #include "agui.h"
+#include "layout.h"
 #include "sdl2_renderer_backend.h"
-#include "widgets.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL_render.h>
@@ -13,10 +13,7 @@ class Timer
 {
   private:
     using duration_type = std::chrono::duration<double, std::ratio<1, FPS>>;
-    using clock_type =
-        std::chrono::time_point<std::chrono::steady_clock,
-                                std::remove_const_t<duration_type>>;
-
+    using clock_type    = std::chrono::time_point<std::chrono::steady_clock, std::remove_const_t<duration_type>>;
     static constexpr duration_type time_between_frames {1};
     clock_type                     tp;
 
@@ -103,11 +100,61 @@ int main()
 
     AGUI::SDL2::impl_backend (window, renderer);
 
-    AGUI::Button* b1 = nullptr;
-    FRAME ("Test Frame 1", 500, 100, 600, 500)
+    FRAME ("Test Frame 1", 1000, 100, 600, 500)
     {
-        b1 = BUTTON ("Button 1", 0, 0);
-        BUTTON ("Button 2", 0, 100);
+        VSTACK()
+        {
+            AGUI::create_button (" 1 ", 0, 0);
+            AGUI::create_button (" 2 ", 0, 0);
+
+            HSTACK()
+            {
+                AGUI::create_button (" 3 ", 0, 0);
+                AGUI::create_button (" 4 ", 0, 0);
+                AGUI::create_button (" 5 ", 0, 0);
+
+                VSTACK()
+                {
+                    AGUI::create_button (" 6 ", 0, 0);
+                    AGUI::create_button (" 7 ", 0, 0);
+                }
+            }
+            AGUI::create_button (" 8 ", 0, 0);
+            AGUI::create_button (" 9 ", 0, 0);
+        }
+    }
+
+    FRAME ("Test Frame 2", 0, 100, 600, 500)
+    {
+        const float w = 50;
+        const float h = 50;
+        VSTACK()
+        {
+            HSTACK()
+            {
+                AGUI::create_button ("1", 0, 0, w, h);
+                AGUI::create_button ("2", 0, 0, w, h);
+                AGUI::create_button ("3", 0, 0, w, h);
+            }
+            HSTACK()
+            {
+                AGUI::create_button ("4", 0, 0, w, h);
+                AGUI::create_button ("5", 0, 0, w, h);
+                AGUI::create_button ("6", 0, 0, w, h);
+            }
+            HSTACK()
+            {
+                AGUI::create_button ("7", 0, 0, w, h);
+                AGUI::create_button ("8", 0, 0, w, h);
+                AGUI::create_button ("9", 0, 0, w, h);
+            }
+            HSTACK()
+            {
+                AGUI::create_button ("*", 0, 0, w, h);
+                AGUI::create_button ("0", 0, 0, w, h);
+                AGUI::create_button ("#", 0, 0, w, h);
+            }
+        }
     }
 
     bool running = true;
@@ -117,7 +164,7 @@ int main()
 
     while (running)
     {
-        [[maybe_unused]] const int frames = fps_counter.update();
+        const int frames = fps_counter.update();
 
         SDL_RenderClear (renderer);
         SDL_Event event;
@@ -147,9 +194,6 @@ int main()
         SDL_GetWindowSize (window, &w, &h);
 
         AGUI::text ({0, 50}, "window size: {}, {}", w, h);
-
-        b1->hover_event ([]()
-                         { AGUI::text ({0, 100}, "HOVER"); });
 
         AGUI::update();
         SDL_RenderPresent (renderer);

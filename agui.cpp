@@ -1,4 +1,5 @@
 #include "agui.h"
+#include "layout.h"
 #include "shapes.h"
 #include "widgets.h"
 #include <iterator>
@@ -8,7 +9,7 @@
 namespace
 {
     AGUI::Context ctx {};
-}
+} // namespace
 
 /* default style */
 AGUI::Style::Style()
@@ -41,6 +42,16 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y)
     auto current_frame = ctx.frames.back();
     auto button        = std::make_shared<Button> (label, x, y);
     ctx.frames.back()->add_widget (button);
+    get_stack_state().current_collection.push_back (button);
+    return button.get();
+}
+
+AGUI::Button* AGUI::create_button (std::string label, float x, float y, float w, float h)
+{
+    auto current_frame = ctx.frames.back();
+    auto button        = std::make_shared<Button> (label, x, y, w, h);
+    ctx.frames.back()->add_widget (button);
+    get_stack_state().current_collection.push_back (button);
     return button.get();
 }
 
@@ -187,17 +198,26 @@ void AGUI::Frame::draw (void)
     content.translate ({-position.x, -position.y});
 
     content.translate (position);
-    for (auto& widget : widgets)
+    /*
+     for (auto& widget : widgets)
+     {
+         const float fh = frame_bar.get_height();
+
+         widget->translate ({position.x + padding, position.y + fh + padding});
+
+         if (widget->position().y + widget->size().y < content.get_max().y + 50)
+             widget->draw();
+         widget->translate ({-position.x - padding, -position.y - fh - padding});
+     }
+ */
+    for (auto& c : collection)
     {
         const float fh = frame_bar.get_height();
-
-        widget->translate ({position.x + padding, position.y + fh + padding});
-
-        /* render clipping */
-        if (widget->position().y + widget->size().y < content.get_max().y + 50)
-            widget->draw();
-        widget->translate ({-position.x - padding, -position.y - fh - padding});
+        c->translate ({position.x + padding, position.y + fh + padding});
+        c->draw();
+        c->translate ({-position.x - padding, -position.y - fh - padding});
     }
+
     content.translate ({-position.x, -position.y});
 
     io.backend->end_clip();
@@ -326,3 +346,40 @@ bool AGUI::Frame::has_widget_id (const std::string& id) const
 {
     return widget_map.contains (id);
 }
+void AGUI::Frame::add_element (std::shared_ptr<Stackable> s)
+{
+    collection.push_back (std::move (s));
+}
+
+void AGUI::frame_end()
+{
+    for (auto& s : get_stack_state().current_collection)
+    {
+        ctx.frames.back()->add_element (std::move (s));
+    }
+    get_stack_state().collection         = {};
+    get_stack_state().current_collection = {};
+}
+
+/*
+void AGUI::vstack_end()
+{
+
+    std::shared_ptr<Stackable> new_vstack = std::make_shared<Vstack> (std::move (stack_state.current_collection));
+    stack_state.current_collection        = std::move (stack_state.collection);
+    stack_state.current_collection.push_back (std::move (new_vstack));
+    stack_state.collection = {};
+}
+*/
+/*
+ * HSTACK()
+ * {
+ *    button
+ *    button
+ *
+ *    VSTACK()
+ *    {
+ *
+ *    }
+ * }
+ */
