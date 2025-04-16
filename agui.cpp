@@ -75,10 +75,10 @@ void AGUI::update (void)
     {
         auto frame = it->lock();
 
-        if (frame->resize())
+        if (frame->resize() && ! ctx.focused_frame.expired() && ctx.focused_frame.lock()->focus())
             break;
 
-        if (frame->move())
+        if (frame->move() || frame->focus())
         {
             if (ctx.focused_frame.expired())
                 ctx.focused_frame = *it;
@@ -136,8 +136,6 @@ void AGUI::Frame::draw (void)
 {
     IO&   io      = ctx.io;
     float padding = style.padding.value();
-
-    resize();
 
     /* frame bar  */
     frame_bar.translate (position);
