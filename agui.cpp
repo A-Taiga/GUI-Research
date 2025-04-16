@@ -41,7 +41,6 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y)
 {
     auto current_frame = ctx.frames.back();
     auto button        = std::make_shared<Button> (label, x, y);
-    ctx.frames.back()->add_widget (button);
     get_stack_state().current_collection.push_back (button);
     return button.get();
 }
@@ -50,7 +49,6 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y, float w,
 {
     auto current_frame = ctx.frames.back();
     auto button        = std::make_shared<Button> (label, x, y, w, h);
-    ctx.frames.back()->add_widget (button);
     get_stack_state().current_collection.push_back (button);
     return button.get();
 }
@@ -58,19 +56,14 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y, float w,
 AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y)
 {
     AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
-    AGUI_ASSERT (! (*ctx.frames_map[frame_id])->has_widget_id (label + "##Button") && "Button already has that label");
     auto button = std::make_shared<Button> (label, x, y);
-    (*ctx.frames_map[frame_id])->add_widget (button);
     return button.get();
 }
 
 AGUI::Button* AGUI::create_button (std::string frame_id, std::string label, float x, float y, float w, float h, const Style& style)
 {
     AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
-    AGUI_ASSERT (! (*ctx.frames_map[frame_id])->has_widget_id (label + "##Button") && "Button already has that label");
-
     auto button = std::make_shared<Button> (label, x, y, w, h, style);
-    (*ctx.frames_map[frame_id])->add_widget (button);
     return button.get();
 }
 
@@ -78,8 +71,6 @@ AGUI::Label* AGUI::create_label (std::string frame_id, std::string text, float x
 {
     AGUI_ASSERT (ctx.frames_map.contains (frame_id) && "Frame does not exist");
     auto label = std::make_shared<Label> (text, x, y);
-    (*ctx.frames_map[frame_id])->add_widget (label);
-
     return label.get();
 }
 
@@ -198,18 +189,6 @@ void AGUI::Frame::draw (void)
     content.translate ({-position.x, -position.y});
 
     content.translate (position);
-    /*
-     for (auto& widget : widgets)
-     {
-         const float fh = frame_bar.get_height();
-
-         widget->translate ({position.x + padding, position.y + fh + padding});
-
-         if (widget->position().y + widget->size().y < content.get_max().y + 50)
-             widget->draw();
-         widget->translate ({-position.x - padding, -position.y - fh - padding});
-     }
- */
     for (auto& c : collection)
     {
         const float fh = frame_bar.get_height();
@@ -217,7 +196,6 @@ void AGUI::Frame::draw (void)
         c->draw();
         c->translate ({-position.x - padding, -position.y - fh - padding});
     }
-
     content.translate ({-position.x, -position.y});
 
     io.backend->end_clip();
@@ -336,16 +314,6 @@ void AGUI::Frame::resize (void)
 
 std::string AGUI::Frame::ID (void) const { return name; }
 
-void AGUI::Frame::add_widget (const std::shared_ptr<Widget> widget)
-{
-    widgets.push_back (widget);
-    widget_map[widget->ID() + "##Button"] = std::prev (widgets.end());
-}
-
-bool AGUI::Frame::has_widget_id (const std::string& id) const
-{
-    return widget_map.contains (id);
-}
 void AGUI::Frame::add_element (std::shared_ptr<Stackable> s)
 {
     collection.push_back (std::move (s));
