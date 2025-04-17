@@ -42,7 +42,10 @@ namespace AGUI
     class Label;
     class Rect;
     struct Widget;
-    struct Stackable;
+    namespace Layout
+    {
+        struct Stackable;
+    }
 
     using color_t                              = uint32_t;
     static constexpr color_t clear             = 0x00000000;
@@ -129,28 +132,28 @@ namespace AGUI
         bool        focus (void);
         bool        resize (void);
         std::string ID (void) const;
-        void        add_element (std::shared_ptr<Stackable>);
+        void        add_element (std::shared_ptr<AGUI::Layout::Stackable>);
 
       private:
-        uint32_t                                options;
-        std::string                             name;
-        Point                                   position;
-        Vec2                                    size;
-        Rect                                    frame_bar;
-        Rect                                    content;
-        Rect                                    border;
-        Rect                                    resize_box;
-        Style                                   style;
-        bool                                    minimized          = false;
-        bool                                    resizing           = false;
-        bool                                    frame_bar_selected = false;
-        bool                                    mouse_was_down     = false;
-        Point                                   mouse_down_pos;
-        Vec2                                    move_offset;
-        Vec2                                    resize_offset;
-        std::unique_ptr<Button>                 close_button;
-        std::unique_ptr<Button>                 minimize_button;
-        std::vector<std::shared_ptr<Stackable>> collection;
+        uint32_t                                        options;
+        std::string                                     name;
+        Point                                           position;
+        Vec2                                            size;
+        Rect                                            frame_bar;
+        Rect                                            content;
+        Rect                                            border;
+        Rect                                            resize_box;
+        Style                                           style;
+        bool                                            minimized          = false;
+        bool                                            resizing           = false;
+        bool                                            frame_bar_selected = false;
+        bool                                            mouse_was_down     = false;
+        Point                                           mouse_down_pos;
+        Vec2                                            move_offset;
+        Vec2                                            resize_offset;
+        std::unique_ptr<Button>                         close_button;
+        std::unique_ptr<Button>                         minimize_button;
+        std::vector<std::shared_ptr<Layout::Stackable>> collection;
     };
 
     using shared_frame_t = std::shared_ptr<Frame>;

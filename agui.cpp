@@ -41,7 +41,7 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y)
 {
     auto current_frame = ctx.frames.back();
     auto button        = std::make_shared<Button> (label, x, y);
-    get_stack_state().current_collection.push_back (button);
+    AGUI::Layout::push_element (button);
     return button.get();
 }
 
@@ -49,7 +49,7 @@ AGUI::Button* AGUI::create_button (std::string label, float x, float y, float w,
 {
     auto current_frame = ctx.frames.back();
     auto button        = std::make_shared<Button> (label, x, y, w, h);
-    get_stack_state().current_collection.push_back (button);
+    AGUI::Layout::push_element (button);
     return button.get();
 }
 
@@ -57,7 +57,7 @@ AGUI::Label* AGUI::create_label (std::string text, float x, float y)
 {
     auto current_frame = ctx.frames.back();
     auto label         = std::make_shared<Label> (text, x, y);
-    get_stack_state().current_collection.push_back (label);
+    AGUI::Layout::push_element (label);
     return label.get();
 }
 
@@ -65,7 +65,7 @@ AGUI::Label* AGUI::create_label (std::string text, float x, float y, float w, fl
 {
     auto current_frame = ctx.frames.back();
     auto label         = std::make_shared<Label> (text, x, y, w, h);
-    get_stack_state().current_collection.push_back (label);
+    AGUI::Layout::push_element (label);
     return label.get();
 }
 
@@ -329,17 +329,25 @@ bool AGUI::Frame::resize (void)
 
 std::string AGUI::Frame::ID (void) const { return name; }
 
-void AGUI::Frame::add_element (std::shared_ptr<Stackable> s)
+void AGUI::Frame::add_element (std::shared_ptr<Layout::Stackable> s)
 {
     collection.push_back (std::move (s));
 }
 
 void AGUI::frame_end()
 {
-    for (auto& s : get_stack_state().current_collection)
-    {
-        ctx.frames.back()->add_element (std::move (s));
-    }
-    get_stack_state().collection         = {};
-    get_stack_state().current_collection = {};
+    auto& layout_state = AGUI::Layout::get_layout_state();
+    if (layout_state.stk.empty())
+        return;
+    ctx.frames.back()->add_element (layout_state.stk.top());
+    layout_state.stk.pop();
+
+    /*
+     for (auto& s : get_stack_state().current_collection)
+     {
+         ctx.frames.back()->add_element (std::move (s));
+     }
+     get_stack_state().collection         = {};
+     get_stack_state().current_collection = {};
+     */
 }

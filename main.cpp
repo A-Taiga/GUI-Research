@@ -99,35 +99,6 @@ int main()
     }
 
     AGUI::SDL2::impl_backend (window, renderer);
-
-    FRAME ("Test Frame 1", 1000, 100, 600, 500)
-    {
-        VSTACK()
-        {
-            AGUI::create_label ("Hello World!", 0, 0);
-            VSTACK()
-            {
-                AGUI::create_button (" 1 ", 0, 0);
-                AGUI::create_button (" 2 ", 0, 0);
-
-                HSTACK()
-                {
-                    AGUI::create_button (" 3 ", 0, 0);
-                    AGUI::create_button (" 4 ", 0, 0);
-                    AGUI::create_button (" 5 ", 0, 0);
-
-                    VSTACK()
-                    {
-                        AGUI::create_button (" 6 ", 0, 0);
-                        AGUI::create_button (" 7 ", 0, 0);
-                    }
-                }
-                AGUI::create_button (" 8 ", 0, 0);
-                AGUI::create_button (" 9 ", 0, 0);
-            }
-        }
-    }
-
     FRAME ("Test Frame 2", 0, 100, 600, 500)
     {
         const float w = 50;

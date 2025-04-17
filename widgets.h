@@ -11,7 +11,7 @@
 namespace AGUI
 {
     using color_t = uint32_t;
-    struct Widget
+    struct Widget : public Layout::Stackable
     {
         virtual ~Widget (void) {}
         virtual void         draw (const Vec2&)      = 0;
@@ -21,9 +21,10 @@ namespace AGUI
         virtual Vec2         size (void) const       = 0;
         virtual const Style& style (void) const      = 0;
         virtual void         move (const Point&)     = 0;
+        AGUI::Layout::Tag    tag (void) { return Layout::Tag::OTHER; }
     };
 
-    class Button : public Widget, public Stackable
+    class Button : public Widget
     {
       public:
         Button (std::string _label, float x, float y, float w, float h, const Style& = {});
@@ -59,7 +60,7 @@ namespace AGUI
         std::function<void()> event_cb;
     };
 
-    class Label : public Widget, public Stackable
+    class Label : public Widget
     {
       public:
         Label (std::string text, float x, float y);
