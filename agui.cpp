@@ -336,18 +336,7 @@ void AGUI::Frame::add_element (std::shared_ptr<Layout::Stackable> s)
 
 void AGUI::frame_end()
 {
-    auto& layout_state = AGUI::Layout::get_layout_state();
-    if (layout_state.stk.empty())
-        return;
-    ctx.frames.back()->add_element (layout_state.stk.top());
-    layout_state.stk.pop();
-
-    /*
-     for (auto& s : get_stack_state().current_collection)
-     {
-         ctx.frames.back()->add_element (std::move (s));
-     }
-     get_stack_state().collection         = {};
-     get_stack_state().current_collection = {};
-     */
+    auto group = AGUI::Layout::top_element();
+    if (group.has_value())
+        ctx.frames.back()->add_element (group.value());
 }

@@ -3,7 +3,7 @@
 
 namespace
 {
-    AGUI::Layout::Layout_state state;
+    AGUI::Layout::State state;
 }
 
 void AGUI::Layout::Layout_group::translate (const Point& p)
@@ -35,7 +35,7 @@ void AGUI::Layout::Hstack::draw (const Vec2& clip)
         if (c->position().x < clip.x)
             c->draw (clip);
         c->translate ({-pos.x - prev_x, -pos.y});
-        prev_x = prev_x + c->size().x + 5;
+        prev_x = prev_x + c->size().x + padding;
     }
 }
 
@@ -57,7 +57,7 @@ void AGUI::Layout::Vstack::draw (const Vec2& clip)
         if (c->position().y < clip.y)
             c->draw (clip);
         c->translate ({-pos.x, -pos.y - prev_y});
-        prev_y = prev_y + c->size().y + 5;
+        prev_y = prev_y + c->size().y + padding;
     }
 }
 
@@ -70,9 +70,24 @@ void AGUI::Layout::Vstack::calc_size (void)
     }
 }
 
-AGUI::Layout::Layout_state& AGUI::Layout::get_layout_state()
+void AGUI::Layout::Zstack::draw (const Vec2& clip)
 {
-    return state;
+    for (auto& c : group)
+    {
+        c->translate ({pos.x, pos.y});
+        if (c->position().x < clip.x)
+            c->draw (clip);
+        c->translate ({-pos.x, -pos.y});
+    }
+}
+
+void AGUI::Layout::Zstack::calc_size (void)
+{
+    for (const auto& i : group)
+    {
+        _size.x = std::max (_size.x, i->size().x);
+        _size.y = std::max (_size.y, i->size().y);
+    }
 }
 
 void AGUI::Layout::push_element (std::shared_ptr<Stackable> s)
@@ -80,16 +95,33 @@ void AGUI::Layout::push_element (std::shared_ptr<Stackable> s)
     state.stk.push (s);
 }
 
-void AGUI::Layout::hstack_begin (void)
+std::optional<std::shared_ptr<AGUI::Layout::Stackable>> AGUI::Layout::top_element (void)
 {
-    state.stk.push (std::make_shared<Hstack>());
+    if (! state.stk.empty())
+    {
+        return state.stk.top();
+    }
+    return {};
 }
 
-void AGUI::Layout::vstack_begin (void)
+void AGUI::Layout::hstack_begin (const float padding)
 {
-    state.stk.push (std::make_shared<Vstack>());
+    state.stk.push (std::make_shared<Hstack> (padding));
 }
 
+void AGUI::Layout::vstack_begin (const float padding)
+{
+    state.stk.push (std::make_shared<Vstack> (padding));
+}
+void AGUI::Layout::zstack_begin (void)
+{
+    state.stk.push (std::make_shared<Zstack>());
+}
+
+void AGUI::Layout::spacer (float w, float h)
+{
+    state.stk.push (std::make_shared<Spacer> (w, h));
+}
 void combine (AGUI::Layout::Layout_group* c, std::vector<std::shared_ptr<AGUI::Layout::Stackable>>& v)
 {
     for (auto& i : v)

@@ -26,15 +26,12 @@
 #define FRAME5(name, x, y, w, h) \
     AGUI::create_frame (name, x, y, w, h);
 
-#define FRAME(...)                 \
-    DISPATCH (FRAME, __VA_ARGS__); \
-    for (int i = 0; i < 1; i = 1, AGUI::frame_end())
-
-#define BUTTON3(name, x, y) \
-    AGUI::create_button (name, x, y);
-
-#define BUTTON(...) \
-    DISPATCH (BUTTON, __VA_ARGS__)
+#define FRAME(...)                                 \
+    DISPATCH (FRAME, __VA_ARGS__);                 \
+    for (                                          \
+        int i = (AGUI::Layout::zstack_begin(), 0); \
+        i < 1;                                     \
+        i = 1, AGUI::Layout::layout_end(), AGUI::frame_end())
 
 namespace AGUI
 {

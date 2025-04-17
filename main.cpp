@@ -101,33 +101,79 @@ int main()
     AGUI::SDL2::impl_backend (window, renderer);
     FRAME ("Test Frame 2", 0, 100, 600, 500)
     {
-        const float w = 50;
-        const float h = 50;
-        VSTACK()
+        const float w       = 50;
+        const float h       = 50;
+        const float padding = 10;
+        VSTACK (padding)
         {
-            HSTACK()
+            HSTACK (padding)
             {
                 AGUI::create_button ("1", 0, 0, w, h);
                 AGUI::create_button ("2", 0, 0, w, h);
                 AGUI::create_button ("3", 0, 0, w, h);
             }
-            HSTACK()
+            HSTACK (padding)
             {
                 AGUI::create_button ("4", 0, 0, w, h);
                 AGUI::create_button ("5", 0, 0, w, h);
                 AGUI::create_button ("6", 0, 0, w, h);
             }
-            HSTACK()
+            HSTACK (padding)
             {
                 AGUI::create_button ("7", 0, 0, w, h);
                 AGUI::create_button ("8", 0, 0, w, h);
                 AGUI::create_button ("9", 0, 0, w, h);
             }
-            HSTACK()
+            HSTACK (padding)
             {
                 AGUI::create_button ("*", 0, 0, w, h);
                 AGUI::create_button ("0", 0, 0, w, h);
                 AGUI::create_button ("#", 0, 0, w, h);
+            }
+        }
+    }
+
+    FRAME ("Frame 1", 700, 100, 500, 500)
+    {
+        const float w       = 50;
+        const float h       = 50;
+        const float padding = 10;
+        VSTACK (padding)
+        {
+            HSTACK (padding)
+            {
+                AGUI::create_button ("C", 0, 0, w, h);
+                AGUI::create_button ("+/-", 0, 0, w, h);
+                AGUI::create_button ("%", 0, 0, w, h);
+                AGUI::create_button ("/", 0, 0, w, h);
+            }
+            HSTACK (padding)
+            {
+                AGUI::create_button ("7", 0, 0, w, h);
+                AGUI::create_button ("8", 0, 0, w, h);
+                AGUI::create_button ("9", 0, 0, w, h);
+                AGUI::create_button ("X", 0, 0, w, h);
+            }
+            HSTACK (padding)
+            {
+                AGUI::create_button ("4", 0, 0, w, h);
+                AGUI::create_button ("5", 0, 0, w, h);
+                AGUI::create_button ("6", 0, 0, w, h);
+                AGUI::create_button ("-", 0, 0, w, h);
+            }
+            HSTACK (padding)
+            {
+                AGUI::create_button ("1", 0, 0, w, h);
+                AGUI::create_button ("2", 0, 0, w, h);
+                AGUI::create_button ("3", 0, 0, w, h);
+                AGUI::create_button ("+", 0, 0, w, h);
+            }
+            HSTACK (padding)
+            {
+                SPACER (w + 1, h + 1);
+                AGUI::create_button ("0", 0, 0, w, h);
+                AGUI::create_button (".", 0, 0, w, h);
+                AGUI::create_button ("=", 0, 0, w, h);
             }
         }
     }
