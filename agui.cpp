@@ -262,13 +262,21 @@ bool AGUI::Frame::move (void)
 bool AGUI::Frame::focus (void)
 {
     IO& io = get_io();
-    border.translate (position);
-    bool check = border.contains (io.mouse_pos);
-    border.translate ({-position.x, -position.y});
-    if (io.mouse_down && check)
+
+    if (io.mouse_down && ! mouse_was_down)
     {
-        return true;
+        mouse_was_down = true;
+        mouse_down_pos = io.mouse_pos;
     }
+    else if (! io.mouse_down)
+        mouse_was_down = false;
+
+    border.translate (position);
+    bool check = border.contains (mouse_down_pos);
+    border.translate ({-position.x, -position.y});
+
+    if (io.mouse_down && check)
+        return true;
     return false;
 }
 
