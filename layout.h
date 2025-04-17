@@ -28,7 +28,7 @@ namespace AGUI::Layout
         virtual void  translate (const Point&) = 0;
         virtual Vec2  size (void) const        = 0;
         virtual Point position (void) const    = 0;
-        virtual Tag   tag (void)               = 0;
+        virtual Tag   tag (void) { return OTHER; }
     };
 
     struct Layout_group : public Stackable

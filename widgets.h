@@ -21,7 +21,6 @@ namespace AGUI
         virtual Vec2         size (void) const       = 0;
         virtual const Style& style (void) const      = 0;
         virtual void         move (const Point&)     = 0;
-        AGUI::Layout::Tag    tag (void) { return Layout::Tag::OTHER; }
     };
 
     class Button : public Widget
